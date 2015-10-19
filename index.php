@@ -1,18 +1,39 @@
 <?php
 
-if (!defined('APP_VERSION'))
-{
-	define('APP_VERSION', '1.9.3.363');
-	define('APP_INDEX_ROOT_FILE', __FILE__);
-	define('APP_INDEX_ROOT_PATH', str_replace('\\', '/', rtrim(dirname(__FILE__), '\\/').'/'));
-}
+/**
+ * HumHub
+ * Copyright © 2014 The HumHub Project
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ */
+$yii = dirname(__FILE__) . '/protected/vendors/yii/yii.php';
+$config = dirname(__FILE__) . '/protected/config/main.php';
+$appClass = dirname(__FILE__) . '/protected/components/WebApplication.php';
 
-if (file_exists(APP_INDEX_ROOT_PATH.'rainloop/v/'.APP_VERSION.'/include.php'))
-{
-	include APP_INDEX_ROOT_PATH.'rainloop/v/'.APP_VERSION.'/include.php';
-}
-else
-{
-	echo '[105] Missing version directory';
-	exit(105);
-}
+// Disable these 3 lines when in production mode
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL', 5);
+ini_set('error_reporting', E_ALL);
+
+require_once($yii);
+require_once($appClass);
+
+$app = Yii::createApplication('WebApplication', $config);
+
+Yii::import('application.vendors.*');
+EZendAutoloader::$prefixes = array('Zend', 'Custom');
+Yii::import("ext.yiiext.components.zendAutoloader.EZendAutoloader", true);
+Yii::registerAutoloader(array("EZendAutoloader", "loadClass"), true);
+
+$app->run();
